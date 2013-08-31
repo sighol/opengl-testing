@@ -4,6 +4,7 @@
 #include <GL/freeglut.h>
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
 
 #include "readfile.h"
@@ -20,3 +21,5 @@ void printGlError(std::string);
 uint CreateShader(std::string, GLenum);
 void display();
 void InitWindow(int argc, char** argv);
+void error(std::string);
+void printShaderError(GLuint, std::string filename);

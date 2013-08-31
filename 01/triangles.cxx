@@ -52,7 +52,6 @@ void InitWindow(int argc, char** argv)
 		);
 		exit(EXIT_FAILURE);
 	}
-	printGlError("before glewInit");
 	glewExperimental = GL_TRUE;
 	GLenum glewInitResult = glewInit();
 	if (GLEW_OK != glewInitResult) {
@@ -81,6 +80,9 @@ void initData() {
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
 				 vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT,
+						  GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(vPosition);
 }
 
 void initShaders() {
@@ -91,18 +93,6 @@ void initShaders() {
 
 	GLuint program = LoadShaders(2, shaders);
 	glUseProgram(program);
-	glVertexAttribPointer(vPosition, 4, GL_FLOAT,
-						  GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(vPosition);
-}
-
-void printGlError(string title) {
-	GLenum error = glGetError();
-	if (error != GL_NO_ERROR) {
-		cerr << "Error: " << title << ": " << gluErrorString(error) << endl;
-	} else {
-		cout << title <<": ingen error" << endl;
-	}
 }
 
 
@@ -112,12 +102,15 @@ uint LoadShaders(GLsizei size, ShaderInfo info[]) {
 		ShaderInfo* val = &info[i];
 		GLuint shaderId = CreateShader(val->filename, val->type);
 		glAttachShader(programId, shaderId);
+		error("Attach Shader");
 	}
 	glLinkProgram(programId);
+	error("Link Program");
 	return programId;
 }
 
 uint CreateShader(string filename, GLenum shaderType) {
+	error("clear");
 	string filepath = "shaders/" + filename;
 	string strShader = readlines(filepath);
 	const char* cShader = strShader.c_str();
@@ -126,7 +119,32 @@ uint CreateShader(string filename, GLenum shaderType) {
 
 	glShaderSource(shaderId, 1, &cShader, NULL);
 	glCompileShader(shaderId);
+	printShaderError(shaderId, filename);
 	return shaderId;
+}
+
+void printShaderError(GLuint shaderId, string filename) {
+	GLint status;
+	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
+
+	if (status == GL_FALSE) {
+	    GLint infoLogLength;
+	    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+	    GLchar* strInfoLog = new GLchar[infoLogLength + 1];
+	    glGetShaderInfoLog(shaderId, infoLogLength, NULL, strInfoLog);
+
+	    fprintf(stderr, "Compilation error in shader %s: %s\n", filename.c_str(), strInfoLog);
+	    delete[] strInfoLog;
+	    exit(EXIT_FAILURE);
+	}
+}
+
+void error(string title) {
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR) {
+		cerr << "Error-" << title << ": " << gluErrorString(err) << endl;
+	}
 }
 
 void display()
@@ -136,6 +154,6 @@ void display()
 	glBindVertexArray(VAOs[Triangles]);
 	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
+	glutSwapBuffers();
 	glFlush();
-	printGlError("display");
 }
