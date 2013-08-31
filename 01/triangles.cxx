@@ -18,16 +18,17 @@ int WindowHandle;
 
 int main(int argc, char **argv)
 {
-	InitializeWindow(argc, argv);
+	InitWindow(argc, argv);
 
-	init();
+	initShaders();
+	initData();
 
-	glutDisplayFunc(display);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glutMainLoop();
 }
 
-void InitializeWindow(int argc, char** argv)
+void InitWindow(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitContextVersion(4, 0);
@@ -51,18 +52,19 @@ void InitializeWindow(int argc, char** argv)
 		);
 		exit(EXIT_FAILURE);
 	}
-	glewExperimental = GL_TRUE;
 	printGlError("before glewInit");
+	glewExperimental = GL_TRUE;
 	GLenum glewInitResult = glewInit();
 	if (GLEW_OK != glewInitResult) {
 		cerr << "Unable to initialize GLEW ... exiting" << endl;
 		cerr << glewGetErrorString(glewInitResult) << endl;
 		exit(EXIT_FAILURE);
 	}
+
+	glutDisplayFunc(display);
 }
 
-void init()
-{
+void initData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
@@ -79,7 +81,9 @@ void init()
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
 				 vertices, GL_STATIC_DRAW);
+}
 
+void initShaders() {
 	ShaderInfo shaders[] = {
 		{GL_VERTEX_SHADER, "triangles.vert"},
 		{GL_FRAGMENT_SHADER, "triangles.frag"}
@@ -90,8 +94,6 @@ void init()
 	glVertexAttribPointer(vPosition, 4, GL_FLOAT,
 						  GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vPosition);
-
-	glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 void printGlError(string title) {

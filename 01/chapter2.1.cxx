@@ -85,8 +85,8 @@ void Initialize(int argc, char* argv[])
 	);
 
 
-	CreateShaders();
-	CreateVBO();
+	// CreateShaders();
+	// CreateVBO();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }

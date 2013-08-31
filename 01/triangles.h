@@ -13,9 +13,10 @@ typedef struct {
 	std::string filename;
 } ShaderInfo;
 
-void init();
+void initData();
+void initShaders();
 GLuint LoadShaders(GLsizei, ShaderInfo[]);
 void printGlError(std::string);
 uint CreateShader(std::string, GLenum);
 void display();
-void InitializeWindow(int argc, char** argv);
+void InitWindow(int argc, char** argv);
