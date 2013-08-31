@@ -9,15 +9,21 @@ enum VAO_IDs {Triangles, NumVAOs};
 enum Buffer_IDs {ArrayBuffer, NumBuffers};
 enum Attrib_IDs {vPosition = 0};
 
+GLuint VaoId;
+
 GLuint VAOs[NumVAOs];
 GLuint Buffers[NumBuffers];
 
 const GLuint NumVertices = 6;
 
+int WindowHandle;
+
 void init()
 {
+	cout << NumVAOs << endl;
+	cout << VAOs << endl;
 	glGenVertexArrays(NumVAOs, VAOs);
-	// glBindVertexArray(VAOs[Triangles]);
+	glBindVertexArray(VAOs[Triangles]);
 
 	GLfloat vertices[NumVertices][2] = {
 		{ -0.90, -0.90}, // Triangle 1
@@ -60,19 +66,38 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(512, 512);
 	glutInitContextVersion(4, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutCreateWindow(argv[0]);
+	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 
-	if (glewInit()) {
+	glutSetOption(
+		GLUT_ACTION_ON_WINDOW_CLOSE,
+		GLUT_ACTION_GLUTMAINLOOP_RETURNS
+	);
+
+	glutInitWindowSize(512, 512);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+
+	WindowHandle = glutCreateWindow(argv[0]);
+
+	if (WindowHandle < 1) {
+		fprintf(
+			stderr,
+			"ERROR: could not create a new rendering window.\n"
+		);
+		exit(EXIT_FAILURE);
+	}
+	glewExperimental = GL_TRUE;
+	GLenum glewInitResult = glewInit();
+	if (GLEW_OK != glewInitResult) {
 		cerr << "Unable to initialize GLEW ... exiting" << endl;
+		cerr << glewGetErrorString(glewInitResult) << endl;
 		exit(EXIT_FAILURE);
 	}
 
 	init();
 
-	glutOverlayDisplayFunc(display);
+	glutDisplayFunc(display);
 
 	glutMainLoop();
 }
