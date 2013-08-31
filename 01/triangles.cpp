@@ -27,6 +27,23 @@ void init()
 		{  0.90,  0.90},
 		{ -0.85,  0.90}
 	};
+
+	glGenBuffers(NumBuffers, Buffers);
+	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
+				 vertices, GL_STATIC_DRAW);
+
+	ShaderInfo shaders[] = {
+		{GL_VERTEX_SHADER, "triangles.vert"},
+		{GL_FRAGMENT_SHADER, "triangles.frag"},
+		{GL_NONE, NULL}
+	};
+
+	GLuint program = LoadShaders(shaders);
+	glUseProgram(program);
+	glVertexAttribPointer(vPosition, 2, GL_FLOAT,
+						  GL_FALSE, 0, BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(vPosition);
 }
 
 int main(int argc, char const *argv[])

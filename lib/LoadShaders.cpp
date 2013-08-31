@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <cstdlib>
+#include <cstdio>
 #include <iostream>
 
 #define GLEW_STATIC
@@ -95,7 +96,7 @@ LoadShaders( ShaderInfo* shaders )
         }
 
         glAttachShader( program, shader );
-        
+
         ++entry;
     }
 
@@ -104,7 +105,7 @@ LoadShaders( ShaderInfo* shaders )
         // glProgramParameteri( program, GL_PROGRAM_SEPARABLE, GL_TRUE );
     }
 #endif /* GL_VERSION_4_1 */
-    
+
     glLinkProgram( program );
 
     GLint linked;
@@ -124,7 +125,7 @@ LoadShaders( ShaderInfo* shaders )
             glDeleteShader( entry->shader );
             entry->shader = 0;
         }
-        
+
         return 0;
     }
 
