@@ -1,9 +1,10 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
 #include "vgl.h"
-#include "LoadShaders.h"
+#include "readfile.h"
 
 enum VAO_IDs {Triangles, NumVAOs};
 enum Buffer_IDs {ArrayBuffer, NumBuffers};
@@ -18,10 +19,18 @@ const GLuint NumVertices = 6;
 
 int WindowHandle;
 
+
+
+typedef struct {
+	GLenum type;
+	string filename;
+} ShaderInfo;
+
+GLuint LoadShaders(GLsizei size, ShaderInfo infos[]);
+void printGlError();
+
 void init()
 {
-	cout << NumVAOs << endl;
-	cout << VAOs << endl;
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
@@ -41,15 +50,52 @@ void init()
 
 	ShaderInfo shaders[] = {
 		{GL_VERTEX_SHADER, "triangles.vert"},
-		{GL_FRAGMENT_SHADER, "triangles.frag"},
-		{GL_NONE, NULL}
+		{GL_FRAGMENT_SHADER, "triangles.frag"}
 	};
 
-	GLuint program = LoadShaders(shaders);
+	glGetError();
+	GLuint program = LoadShaders(2, shaders);
 	glUseProgram(program);
+	printGlError();
 	glVertexAttribPointer(vPosition, 2, GL_FLOAT,
 						  GL_FALSE, 0, BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(vPosition);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+}
+
+void printGlError() {
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR) {
+		cerr << "Could not create the shaders: " << gluErrorString(error) << endl;
+	} else {
+		cout << "ingen error" << endl;
+	}
+}
+
+
+uint CreateShader(string filename, GLenum shaderType) {
+	string filepath = "shaders/" + filename;
+	string strShader = readlines(filepath);
+	cout << strShader << endl;
+	const char* cShader = strShader.c_str();
+
+	GLuint shaderId = glCreateShader(shaderType);
+
+	glShaderSource(shaderId, 1, &cShader, NULL);
+	glCompileShader(shaderId);
+	return shaderId;
+}
+
+uint LoadShaders(GLsizei size, ShaderInfo info[]) {
+	GLuint programId = glCreateProgram();
+	for (GLsizei i = 0; i < size; i++) {
+		ShaderInfo* val = &info[i];
+		GLuint shaderId = CreateShader(val->filename, val->type);
+		glAttachShader(programId, shaderId);
+	}
+	glLinkProgram(programId);
+	return programId;
 }
 
 void display()
