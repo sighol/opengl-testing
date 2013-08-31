@@ -1,10 +1,23 @@
 #version 400
 
-layout(location = 0) in vec4 vPosition;
+uniform Uniforms {
+	vec3 translation;
+	float scale;
+	vec4 rotation;
+	bool enabled;
+};
 
+uniform float vScale;
+
+in vec4 vPosition;
 out vec4 vColor;
 
+
 void main() {
-	gl_Position = vPosition;
-	vColor = vec4(0.0, 0.8, 0.6, 0.1);
+	float scale = 0.01;
+	if (vScale > 0) {
+		scale = vScale;
+	}
+	gl_Position = scale * vPosition;
+	vColor = vec4(1.0*scale, 1-scale*0.5, 0.2*scale, 1.0);
 }

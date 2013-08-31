@@ -7,19 +7,16 @@
 #include <cstdlib>
 #include <string>
 
-#include "readfile.h"
-
-typedef struct {
-	GLenum type;
-	std::string filename;
-} ShaderInfo;
+#include "LoadShaders.h"
 
 void initData();
 void initShaders();
-GLuint LoadShaders(GLsizei, ShaderInfo[]);
 void printGlError(std::string);
 uint CreateShader(std::string, GLenum);
 void display();
+void idle();
+void mouse(int button, int state, int x, int y);
+void motion(int, int);
 void InitWindow(int argc, char** argv);
 void error(std::string);
 void printShaderError(GLuint, std::string filename);

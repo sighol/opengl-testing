@@ -12,6 +12,9 @@ GLuint VaoId;
 GLuint VAOs[NumVAOs];
 GLuint Buffers[NumBuffers];
 
+ShaderInfo *shaders;
+GLint vScaleId;
+
 const GLuint NumVertices = 6;
 
 int WindowHandle;
@@ -61,6 +64,8 @@ void InitWindow(int argc, char** argv)
 	}
 
 	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
 }
 
 void initData() {
@@ -86,58 +91,20 @@ void initData() {
 }
 
 void initShaders() {
-	ShaderInfo shaders[] = {
+	ShaderInfo s[] = {
 		{GL_VERTEX_SHADER, "triangles.vert"},
 		{GL_FRAGMENT_SHADER, "triangles.frag"}
 	};
+	shaders = s;
 
 	GLuint program = LoadShaders(2, shaders);
 	glUseProgram(program);
-}
+	vScaleId = glGetUniformLocation(program, "vScale");
+	glUniform1f(vScaleId, 2.0);
 
 
-uint LoadShaders(GLsizei size, ShaderInfo info[]) {
-	GLuint programId = glCreateProgram();
-	for (GLsizei i = 0; i < size; i++) {
-		ShaderInfo* val = &info[i];
-		GLuint shaderId = CreateShader(val->filename, val->type);
-		glAttachShader(programId, shaderId);
-		error("Attach Shader");
-	}
-	glLinkProgram(programId);
-	error("Link Program");
-	return programId;
-}
-
-uint CreateShader(string filename, GLenum shaderType) {
-	error("clear");
-	string filepath = "shaders/" + filename;
-	string strShader = readlines(filepath);
-	const char* cShader = strShader.c_str();
-
-	GLuint shaderId = glCreateShader(shaderType);
-
-	glShaderSource(shaderId, 1, &cShader, NULL);
-	glCompileShader(shaderId);
-	printShaderError(shaderId, filename);
-	return shaderId;
-}
-
-void printShaderError(GLuint shaderId, string filename) {
-	GLint status;
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-
-	if (status == GL_FALSE) {
-	    GLint infoLogLength;
-	    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-	    GLchar* strInfoLog = new GLchar[infoLogLength + 1];
-	    glGetShaderInfoLog(shaderId, infoLogLength, NULL, strInfoLog);
-
-	    fprintf(stderr, "Compilation error in shader %s: %s\n", filename.c_str(), strInfoLog);
-	    delete[] strInfoLog;
-	    exit(EXIT_FAILURE);
-	}
+	error("uniformloc");
+	cout << "uniform-index: " << vScaleId << endl;
 }
 
 void error(string title) {
@@ -155,5 +122,16 @@ void display()
 	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
 	glutSwapBuffers();
+	glutPostRedisplay();
 	glFlush();
+}
+
+
+void mouse(int button, int state, int x, int y) {
+
+}
+
+void motion(int x, int y) {;
+		float scale = x/512.0;
+		glUniform1f(vScaleId, scale);
 }
