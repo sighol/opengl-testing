@@ -5,8 +5,8 @@ using namespace std;
 #include "vgl.h"
 #include "LoadShaders.h"
 
-enum VAO_IDs {Triangles=0, NumVAOs=1};
-enum Buffer_IDs {ArrayBuffer=0, NumBuffers=1};
+enum VAO_IDs {Triangles, NumVAOs};
+enum Buffer_IDs {ArrayBuffer, NumBuffers};
 enum Attrib_IDs {vPosition = 0};
 
 GLuint VAOs[NumVAOs];
@@ -17,7 +17,7 @@ const GLuint NumVertices = 6;
 void init()
 {
 	glGenVertexArrays(NumVAOs, VAOs);
-	glBindVertexArray(VAOs[Triangles]);
+	// glBindVertexArray(VAOs[Triangles]);
 
 	GLfloat vertices[NumVertices][2] = {
 		{ -0.90, -0.90}, // Triangle 1
@@ -56,7 +56,23 @@ void display()
 	glFlush();
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA);
+	glutInitWindowSize(512, 512);
+	glutInitContextVersion(4, 3);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
+	glutCreateWindow(argv[0]);
 
+	if (glewInit()) {
+		cerr << "Unable to initialize GLEW ... exiting" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	init();
+
+	glutOverlayDisplayFunc(display);
+
+	glutMainLoop();
 }

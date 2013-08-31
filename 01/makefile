@@ -10,7 +10,7 @@ SOURCES=$(shell ls *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
 EXEC=main
 
-all: compile run
+all: compile optirun
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC) $(LIBS) $(LIBS2)
