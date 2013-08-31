@@ -46,6 +46,16 @@ void init()
 	glEnableVertexAttribArray(vPosition);
 }
 
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBindVertexArray(VAOs[Triangles]);
+	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+
+	glFlush();
+}
+
 int main(int argc, char const *argv[])
 {
 
