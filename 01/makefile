@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-g -std=c++11 -Wall
 
-LIBS=-lGL -lGLU -lGLEW -lglut
+LIBS=-lGL -lGLU -lGLEW -lglut -L../lib
 INCLUDE = -I../include/
 
 SOURCES=$(shell ls *.cpp)
