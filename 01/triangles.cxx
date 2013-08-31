@@ -1,10 +1,7 @@
-#include <iostream>
-#include <string>
+#include "triangles.h"
 
 using namespace std;
 
-#include "vgl.h"
-#include "readfile.h"
 
 enum VAO_IDs {Triangles, NumVAOs};
 enum Buffer_IDs {ArrayBuffer, NumBuffers};
@@ -19,96 +16,18 @@ const GLuint NumVertices = 6;
 
 int WindowHandle;
 
-
-
-typedef struct {
-	GLenum type;
-	string filename;
-} ShaderInfo;
-
-GLuint LoadShaders(GLsizei size, ShaderInfo infos[]);
-void printGlError();
-
-void init()
-{
-	glGenVertexArrays(NumVAOs, VAOs);
-	glBindVertexArray(VAOs[Triangles]);
-
-	GLfloat vertices[NumVertices][2] = {
-		{ -0.90, -0.90}, // Triangle 1
-		{  0.85, -0.90},
-		{ -0.90,  0.85},
-		{  0.90, -0.85}, // Triangle 2
-		{  0.90,  0.90},
-		{ -0.85,  0.90}
-	};
-
-	glGenBuffers(NumBuffers, Buffers);
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
-				 vertices, GL_STATIC_DRAW);
-
-	ShaderInfo shaders[] = {
-		{GL_VERTEX_SHADER, "triangles.vert"},
-		{GL_FRAGMENT_SHADER, "triangles.frag"}
-	};
-
-	glGetError();
-	GLuint program = LoadShaders(2, shaders);
-	glUseProgram(program);
-	printGlError();
-	glVertexAttribPointer(vPosition, 2, GL_FLOAT,
-						  GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(vPosition);
-
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-}
-
-void printGlError() {
-	GLenum error = glGetError();
-	if (error != GL_NO_ERROR) {
-		cerr << "Could not create the shaders: " << gluErrorString(error) << endl;
-	} else {
-		cout << "ingen error" << endl;
-	}
-}
-
-
-uint CreateShader(string filename, GLenum shaderType) {
-	string filepath = "shaders/" + filename;
-	string strShader = readlines(filepath);
-	cout << strShader << endl;
-	const char* cShader = strShader.c_str();
-
-	GLuint shaderId = glCreateShader(shaderType);
-
-	glShaderSource(shaderId, 1, &cShader, NULL);
-	glCompileShader(shaderId);
-	return shaderId;
-}
-
-uint LoadShaders(GLsizei size, ShaderInfo info[]) {
-	GLuint programId = glCreateProgram();
-	for (GLsizei i = 0; i < size; i++) {
-		ShaderInfo* val = &info[i];
-		GLuint shaderId = CreateShader(val->filename, val->type);
-		glAttachShader(programId, shaderId);
-	}
-	glLinkProgram(programId);
-	return programId;
-}
-
-void display()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glBindVertexArray(VAOs[Triangles]);
-	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
-
-	glFlush();
-}
-
 int main(int argc, char **argv)
+{
+	InitializeWindow(argc, argv);
+
+	init();
+
+	glutDisplayFunc(display);
+
+	glutMainLoop();
+}
+
+void InitializeWindow(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
@@ -134,16 +53,88 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	glewExperimental = GL_TRUE;
+	printGlError("before glewInit");
 	GLenum glewInitResult = glewInit();
 	if (GLEW_OK != glewInitResult) {
 		cerr << "Unable to initialize GLEW ... exiting" << endl;
 		cerr << glewGetErrorString(glewInitResult) << endl;
 		exit(EXIT_FAILURE);
 	}
+}
 
-	init();
+void init()
+{
+	glGenVertexArrays(NumVAOs, VAOs);
+	glBindVertexArray(VAOs[Triangles]);
 
-	glutDisplayFunc(display);
+	GLfloat vertices[NumVertices][4] = {
+		{ -0.90f, -0.90f, 0.0f, 1.0f}, // Triangle 1
+		{  0.85f, -0.90f, 0.0f, 1.0f},
+		{ -0.90f,  0.85f, 0.0f, 1.0f},
+		{  0.90f, -0.85f, 0.0f, 1.0f}, // Triangle 2
+		{  0.90f,  0.90f, 0.0f, 1.0f},
+		{ -0.85f,  0.90f, 0.0f, 1.0f}
+	};
 
-	glutMainLoop();
+	glGenBuffers(NumBuffers, Buffers);
+	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
+				 vertices, GL_STATIC_DRAW);
+
+	ShaderInfo shaders[] = {
+		{GL_VERTEX_SHADER, "triangles.vert"},
+		{GL_FRAGMENT_SHADER, "triangles.frag"}
+	};
+
+	GLuint program = LoadShaders(2, shaders);
+	glUseProgram(program);
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT,
+						  GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(vPosition);
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+}
+
+void printGlError(string title) {
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR) {
+		cerr << "Error: " << title << ": " << gluErrorString(error) << endl;
+	} else {
+		cout << title <<": ingen error" << endl;
+	}
+}
+
+
+uint LoadShaders(GLsizei size, ShaderInfo info[]) {
+	GLuint programId = glCreateProgram();
+	for (GLsizei i = 0; i < size; i++) {
+		ShaderInfo* val = &info[i];
+		GLuint shaderId = CreateShader(val->filename, val->type);
+		glAttachShader(programId, shaderId);
+	}
+	glLinkProgram(programId);
+	return programId;
+}
+
+uint CreateShader(string filename, GLenum shaderType) {
+	string filepath = "shaders/" + filename;
+	string strShader = readlines(filepath);
+	const char* cShader = strShader.c_str();
+
+	GLuint shaderId = glCreateShader(shaderType);
+
+	glShaderSource(shaderId, 1, &cShader, NULL);
+	glCompileShader(shaderId);
+	return shaderId;
+}
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBindVertexArray(VAOs[Triangles]);
+	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+
+	glFlush();
+	printGlError("display");
 }
