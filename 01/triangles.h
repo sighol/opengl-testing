@@ -22,3 +22,16 @@ void error(std::string);
 void printShaderError(GLuint, std::string filename);
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))
+
+struct VertexData {
+		GLubyte *color;
+		GLfloat *position;
+};
+typedef GLfloat* Vertex;
+typedef GLubyte* Color;
+
+VertexData* getVertices(int cols, int rows, int* size);
+
+
+Vertex getVertex(int x, int y);
+Color getColor();

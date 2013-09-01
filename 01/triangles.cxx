@@ -13,9 +13,11 @@ GLuint VAOs[NumVAOs];
 GLuint Buffers[NumBuffers];
 
 ShaderInfo *shaders;
-GLint vScaleId;
 
-const GLuint NumVertices = 6;
+GLint vScaleId;
+GLint vRotationX, vRotationY;
+
+const GLuint NumVertices = 18;
 
 int WindowHandle;
 
@@ -68,36 +70,42 @@ void InitWindow(int argc, char** argv)
 	glutMotionFunc(motion);
 }
 
+void printVertex(VertexData* vertices, int size);
+
 void initData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	typedef struct {
-		GLubyte color[4];
-		GLfloat position[4];
-	}  VertexData;
+	int size;
+	VertexData *vertices = getVertices(10, 10, &size);
+	int VertexDataSize = 4 *sizeof(GLubyte) + 3*sizeof(GLfloat);
 
-	VertexData vertices[NumVertices] = {
-		{{ 255,   0,   0, 255}, { -0.90, -0.90}},
-		{{   0, 255,   0, 255}, {  0.85, -0.90}},
-		{{   0,   0, 255, 255}, { -0.90,  0.85}},
-		{{  255,  10,  10, 255}, {  0.90, -0.85}},
-		{{ 100, 100, 10, 255}, {  0.90,  0.90}},
-		{{ 100, 0, 100, 255}, { -0.85,  0.90}}
-	};
+	int totalSize = VertexDataSize * size;
+	printVertex(vertices, size);
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, totalSize, vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-						  sizeof(VertexData), 0);
+						  VertexDataSize, 0);
 
 	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE,
-						  sizeof(VertexData),
-						  BUFFER_OFFSET(sizeof(vertices[0].color)));
+						  VertexDataSize,
+						  BUFFER_OFFSET(4*sizeof(GLubyte)));
 	glEnableVertexAttribArray(vColor);
 	glEnableVertexAttribArray(vPosition);
 }
+
+void printVertex(VertexData* vertices, int size) {
+	int typeSize = 4 * sizeof(GLubyte) + 3*sizeof(GLfloat);
+	cerr << typeSize << " og " << sizeof(vertices) << endl;
+	for (int i = 0; i < size; i++) {
+		cout << vertices[i] << endl;
+	}
+
+	exit(0);
+}
+
 
 void initShaders() {
 	ShaderInfo s[] = {
@@ -111,9 +119,13 @@ void initShaders() {
 	vScaleId = glGetUniformLocation(program, "vScale");
 	glUniform1f(vScaleId, 2.0);
 
+	vRotationX = glGetUniformLocation(program, "vRotationX");
+	glUniform1i(vRotationX, 0);
+
+	vRotationY = glGetUniformLocation(program, "vRotationY");
+	glUniform1i(vRotationY, 0);
 
 	error("uniformloc");
-	cout << "uniform-index: " << vScaleId << endl;
 }
 
 void error(string title) {
@@ -135,12 +147,74 @@ void display()
 	glFlush();
 }
 
-
+int xBase = 0, yBase = 0;
+int pastDx = 0, pastDy = 0;
+int dx = 0, dy = 0;
 void mouse(int button, int state, int x, int y) {
-
+	if (state == 0) {
+		xBase = x;
+		yBase = y;
+		printf("xbase: %d, yBase:%d\n", x, y);
+	} else {
+		pastDx = dx + pastDx;
+		pastDy = dy + pastDy;
+	}
 }
 
-void motion(int x, int y) {;
-		float scale = x/512.0;
-		glUniform1f(vScaleId, scale);
+void motion(int x, int y) {
+	dx = (x - xBase);
+	float rotationX = (dx + pastDx)/4;
+	glUniform1i(vRotationX, rotationX);
+
+	dy = (y - yBase);
+	float rotationY = (dy + pastDy)/4;
+	glUniform1i(vRotationY, rotationY);
+	printf("x: %d, y: %d\n", dx, dy);
 }
+
+GLfloat func(int x, int y) {
+	return x + y;
+}
+
+typedef GLfloat* Vertex;
+typedef GLubyte* Color;
+
+Vertex getVertex(int x, int y) {
+	GLfloat* vertex = new GLfloat[3];
+	vertex[0] = float(x);
+	vertex[1] = float(y);
+	vertex[2] = func(x, y);
+	return vertex;
+}
+
+Color getColor() {
+	GLubyte *color = new GLubyte[4];
+	for (int i = 0; i < 4; i++) {
+		color[i] = rand() % 255;
+	}
+	return color;
+}
+
+VertexData* getVertices(int cols, int rows, int* size) {
+	*size = (cols-1) * (rows-1) * 6;
+	VertexData *vertices = new VertexData[*size];
+	int n = 0;
+	for (int y = 0; y < rows-1; y++) {
+		for (int x = 0; x < cols-1; x++) {
+			Vertex sw = getVertex(x, y);
+			Vertex se = getVertex(x+1, y);
+			Vertex ne = getVertex(x+1, y+1);
+			Vertex nw = getVertex(x, y+1);
+			Vertex square[] = {se, sw, nw, se, nw, ne};
+			for (int i = 0; i < 6; i++) {
+				VertexData *data = new VertexData;
+				data->position = square[i];
+				data->color = getColor();
+				vertices[n + i] = *data;
+			}
+			n += 6;
+		}
+	}
+	return vertices;
+}
+
