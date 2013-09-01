@@ -10,7 +10,9 @@ uniform Uniforms {
 uniform float vScale;
 
 in vec4 vPosition;
-out vec4 vColor;
+in vec4 vColor;
+
+out vec4 exColor;
 
 
 void main() {
@@ -19,5 +21,5 @@ void main() {
 		scale = vScale;
 	}
 	gl_Position = scale * vPosition;
-	vColor = vec4(1.0*scale, 1-scale*0.5, 0.2*scale, 1.0);
+	exColor = scale * vColor;
 }
