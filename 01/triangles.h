@@ -20,3 +20,5 @@ void motion(int, int);
 void InitWindow(int argc, char** argv);
 void error(std::string);
 void printShaderError(GLuint, std::string filename);
+
+#define BUFFER_OFFSET(x)  ((const void*) (x))

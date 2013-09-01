@@ -5,7 +5,7 @@ using namespace std;
 
 enum VAO_IDs {Triangles, NumVAOs};
 enum Buffer_IDs {ArrayBuffer, NumBuffers};
-enum Attrib_IDs {vPosition = 0};
+enum Attrib_IDs {vPosition = 0, vColor=1};
 
 GLuint VaoId;
 
@@ -72,21 +72,30 @@ void initData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	GLfloat vertices[NumVertices][4] = {
-		{ -0.90f, -0.90f, 0.0f, 1.0f}, // Triangle 1
-		{  0.85f, -0.90f, 0.0f, 1.0f},
-		{ -0.90f,  0.85f, 0.0f, 1.0f},
-		{  0.90f, -0.85f, 0.0f, 1.0f}, // Triangle 2
-		{  0.90f,  0.90f, 0.0f, 1.0f},
-		{ -0.85f,  0.90f, 0.0f, 1.0f}
+	typedef struct {
+		GLubyte color[4];
+		GLfloat position[4];
+	}  VertexData;
+
+	VertexData vertices[NumVertices] = {
+		{{ 255,   0,   0, 255}, { -0.90, -0.90}},
+		{{   0, 255,   0, 255}, {  0.85, -0.90}},
+		{{   0,   0, 255, 255}, { -0.90,  0.85}},
+		{{  10,  10,  10, 255}, {  0.90, -0.85}},
+		{{ 100, 100, 100, 255}, {  0.90,  0.90}},
+		{{ 255, 255, 255, 255}, { -0.85,  0.90}}
 	};
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
-				 vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(vPosition, 4, GL_FLOAT,
-						  GL_FALSE, 0, 0);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+						  sizeof(VertexData), 0);
+
+	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE,
+						  sizeof(VertexData),
+						  BUFFER_OFFSET(sizeof(vertices[0].color)));
+	glEnableVertexAttribArray(vColor);
 	glEnableVertexAttribArray(vPosition);
 }
 
