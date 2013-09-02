@@ -27,11 +27,3 @@ struct VertexData {
 		GLubyte *color;
 		GLfloat *position;
 };
-typedef GLfloat* Vertex;
-typedef GLubyte* Color;
-
-VertexData* getVertices(int cols, int rows, int* size);
-
-
-Vertex getVertex(int x, int y);
-Color getColor();
