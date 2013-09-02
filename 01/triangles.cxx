@@ -15,7 +15,7 @@ GLuint Buffers[NumBuffers];
 ShaderInfo *shaders;
 GLint vScaleId;
 
-const GLuint NumVertices = 6;
+GLuint NumVertices = 6;
 
 GLint vRotationX, vRotationY;
 
@@ -74,19 +74,15 @@ void initData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	typedef struct {
-		GLubyte color[4];
-		GLfloat position[4];
-	}  VertexData;
-
-	VertexData vertices[NumVertices] = {
-		{{ 255,   0,   0, 255}, { -0.90, -0.90}},
-		{{   0, 255,   0, 255}, {  0.85, -0.90}},
-		{{   0,   0, 255, 255}, { -0.90,  0.85}},
-		{{  255,  10,  10, 255}, {  0.90, -0.85}},
-		{{ 100, 100, 10, 255}, {  0.90,  0.90}},
-		{{ 100, 0, 100, 255}, { -0.85,  0.90}}
-	};
+	// VertexData vertices[NumVertices] = {
+	// 	{{ 255,   0,   0, 255}, { -0.90, -0.90}},
+	// 	{{   0, 255,   0, 255}, {  0.85, -0.90}},
+	// 	{{   0,   0, 255, 255}, { -0.90,  0.85}},
+	// 	{{  255,  10,  10, 255}, {  0.90, -0.85}},
+	// 	{{ 100, 100, 10, 255}, {  0.90,  0.90}},
+	// 	{{ 100, 0, 100, 255}, { -0.85,  0.90}}
+	// };
+	VertexData* vertices = getVertices(10, 10, &NumVertices);
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
@@ -94,7 +90,7 @@ void initData() {
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
 						  sizeof(VertexData), 0);
 
-	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE,
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE,
 						  sizeof(VertexData),
 						  BUFFER_OFFSET(sizeof(vertices[0].color)));
 	glEnableVertexAttribArray(vColor);

@@ -1,26 +1,10 @@
-#include "triangles.h"
+#include "vertices.h"
 
 using namespace std;
 
-typedef GLfloat* Vertex;
-typedef GLubyte* Color;
 
-VertexData* getVertices(int cols, int rows, int* size);
-Vertex getVertex(int x, int y);
-Color getColor();
-void printVertices(VertexData* data, int size);
-GLfloat func(int x, int y);
-
-int main() {
-	int rows = 2;
-	int cols = 2;
-	int size;
-	VertexData* data = getVertices(cols, rows, &size);
-	printVertices(data, size);
-}
-
-VertexData* getVertices(int cols, int rows, int* size) {
-	*size = (cols-1) * (rows-1) * 6;
+VertexData* getVertices(int cols, int rows, uint* size) {
+	*size = (cols-1) * (rows-1)*6;
 	VertexData *vertices = new VertexData[*size];
 	int n = 0;
 	for (int y = 0; y < rows-1; y++) {
@@ -31,12 +15,13 @@ VertexData* getVertices(int cols, int rows, int* size) {
 			Vertex nw = getVertex(x, y+1);
 			Vertex square[] = {se, sw, nw, se, nw, ne};
 			for (int i = 0; i < 6; i++) {
-				VertexData *data = new VertexData;
-				data->position = square[i];
-				data->color = getColor();
-				vertices[n + i] = *data;
+				Vertex v = square[i];
+				Color c = getColor();
+				vertices[n].color = c;
+				vertices[n].position = v;
+				n++;
 			}
-			n += 6;
+
 		}
 	}
 	return vertices;
@@ -62,11 +47,30 @@ Color getColor() {
 	return color;
 }
 
-void printVertices(VertexData* data, int size) {
+void printVertices(VertexData* vertices, int size) {
 	cout << "printing: " << size <<  endl;
 	for (int i = 0; i < size; i++) {
-		VertexData *data = &data[i];
-		cout << data->color << endl;
+		VertexData *data = &vertices[i];
+		printVertexData(data);
 	}
 	cout << "is done" << endl;
+}
+
+void printVertex(Vertex v) {
+	for (int i = 0; i < 3; i++) {
+		cout << v[i] << ", ";
+	}
+	cout << endl;
+}
+
+void printVertexData(VertexData *vd) {
+	cout << "Pos: ";
+	for (int i = 0; i < 3; i++) {
+		cout << vd->position[i] << ", ";
+	}
+	cout << "Color: ";
+	for (int i = 0; i < 4; i++) {
+		cout << (int)vd->color[i] << ", ";
+	}
+	cout << endl;
 }

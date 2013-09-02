@@ -8,6 +8,7 @@
 #include <string>
 
 #include "LoadShaders.h"
+#include "vertices.h"
 
 void initData();
 void initShaders();
@@ -22,8 +23,3 @@ void error(std::string);
 void printShaderError(GLuint, std::string filename);
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))
-
-struct VertexData {
-		GLubyte *color;
-		GLfloat *position;
-};
