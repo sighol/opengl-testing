@@ -82,17 +82,18 @@ void initData() {
 	// 	{{ 100, 100, 10, 255}, {  0.90,  0.90}},
 	// 	{{ 100, 0, 100, 255}, { -0.85,  0.90}}
 	// };
-	VertexData* vertices = getVertices(10, 10, &NumVertices);
+	VertexData* vertices = getVertices(3, 3, &NumVertices);
+	uint dataSize = NumVertices * VERTEX_DATA_SIZE;
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, dataSize, vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-						  sizeof(VertexData), 0);
+						  VERTEX_DATA_SIZE, 0);
 
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE,
-						  sizeof(VertexData),
-						  BUFFER_OFFSET(sizeof(vertices[0].color)));
+						  VERTEX_DATA_SIZE,
+						  BUFFER_OFFSET(4 * sizeof(GLubyte)));
 	glEnableVertexAttribArray(vColor);
 	glEnableVertexAttribArray(vPosition);
 }

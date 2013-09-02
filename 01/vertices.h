@@ -12,6 +12,8 @@ typedef struct {
 		GLfloat *position;
 } VertexData;
 
+const uint VERTEX_DATA_SIZE = 3* sizeof(GLfloat) + 4*sizeof(GLubyte);
+
 
 VertexData* getVertices(int cols, int rows, uint* size);
 Vertex getVertex(int x, int y);
