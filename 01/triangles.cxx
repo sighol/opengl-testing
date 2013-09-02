@@ -13,11 +13,11 @@ GLuint VAOs[NumVAOs];
 GLuint Buffers[NumBuffers];
 
 ShaderInfo *shaders;
-
 GLint vScaleId;
-GLint vRotationX, vRotationY;
 
-const GLuint NumVertices = 18;
+const GLuint NumVertices = 6;
+
+GLint vRotationX, vRotationY;
 
 int WindowHandle;
 
@@ -70,42 +70,36 @@ void InitWindow(int argc, char** argv)
 	glutMotionFunc(motion);
 }
 
-void printVertex(VertexData* vertices, int size);
-
 void initData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	int size;
-	VertexData *vertices = getVertices(10, 10, &size);
-	int VertexDataSize = 4 *sizeof(GLubyte) + 3*sizeof(GLfloat);
+	typedef struct {
+		GLubyte color[4];
+		GLfloat position[4];
+	}  VertexData;
 
-	int totalSize = VertexDataSize * size;
-	printVertex(vertices, size);
+	VertexData vertices[NumVertices] = {
+		{{ 255,   0,   0, 255}, { -0.90, -0.90}},
+		{{   0, 255,   0, 255}, {  0.85, -0.90}},
+		{{   0,   0, 255, 255}, { -0.90,  0.85}},
+		{{  255,  10,  10, 255}, {  0.90, -0.85}},
+		{{ 100, 100, 10, 255}, {  0.90,  0.90}},
+		{{ 100, 0, 100, 255}, { -0.85,  0.90}}
+	};
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, totalSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-						  VertexDataSize, 0);
+						  sizeof(VertexData), 0);
 
 	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE,
-						  VertexDataSize,
-						  BUFFER_OFFSET(4*sizeof(GLubyte)));
+						  sizeof(VertexData),
+						  BUFFER_OFFSET(sizeof(vertices[0].color)));
 	glEnableVertexAttribArray(vColor);
 	glEnableVertexAttribArray(vPosition);
 }
-
-void printVertex(VertexData* vertices, int size) {
-	int typeSize = 4 * sizeof(GLubyte) + 3*sizeof(GLfloat);
-	cerr << typeSize << " og " << sizeof(vertices) << endl;
-	for (int i = 0; i < size; i++) {
-		cout << vertices[i] << endl;
-	}
-
-	exit(0);
-}
-
 
 void initShaders() {
 	ShaderInfo s[] = {
@@ -154,7 +148,6 @@ void mouse(int button, int state, int x, int y) {
 	if (state == 0) {
 		xBase = x;
 		yBase = y;
-		printf("xbase: %d, yBase:%d\n", x, y);
 	} else {
 		pastDx = dx + pastDx;
 		pastDy = dy + pastDy;
@@ -169,7 +162,6 @@ void motion(int x, int y) {
 	dy = (y - yBase);
 	float rotationY = (dy + pastDy)/4;
 	glUniform1i(vRotationY, rotationY);
-	printf("x: %d, y: %d\n", dx, dy);
 }
 
 GLfloat func(int x, int y) {
