@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <time.h>
 
 struct Vertex {
 	GLfloat x, y, z, w;
@@ -25,3 +26,4 @@ Color getColor();
 GLfloat func(int x, int y);
 // void printVertex(Vertex vertex);
 // void printVertexData(std::);
+void printVertexData(const std::vector<VertexData> &data);

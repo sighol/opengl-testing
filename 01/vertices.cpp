@@ -4,6 +4,7 @@ using namespace std;
 
 
 vector<VertexData> getVertices(int cols, int rows) {
+	srand(time(NULL));
 	vector<VertexData> vec;
 	for (int y = 0; y < rows-1; y++) {
 		for (int x = 0; x < cols-1; x++) {
@@ -26,9 +27,10 @@ vector<VertexData> getVertices(int cols, int rows) {
 
 Vertex getVertex(int x, int y) {
 	Vertex v;
-	v.x = float(x);
-	v.y = float(y);
-	v.z = func(x, y);
+	int d = 2;
+	v.x = float(x)/d;
+	v.y = float(y)/d;
+	v.z = func(x, y)/d;
 	v.w = 1.0;
 	return v;
 }
@@ -43,7 +45,7 @@ Color getColor() {
 }
 
 GLfloat func(int x, int y) {
-	return x + y;
+	return 0.0;
 }
 
 // Color getColor() {
@@ -68,14 +70,15 @@ GLfloat func(int x, int y) {
 // 	cout << endl;
 // }
 
-// void printVertexData(VertexData *vd) {
-// 	cout << "Pos: ";
-// 	for (int i = 0; i < 3; i++) {
-// 		cout << vd->position[i] << ", ";
-// 	}
-// 	cout << "Color: ";
-// 	for (int i = 0; i < 4; i++) {
-// 		cout << (int)vd->color[i] << ", ";
-// 	}
-// 	cout << endl;
-// }
+void printVertexData(const vector<VertexData> &data) {
+	for (uint i = 0; i < data.size(); ++i) {
+		GLfloat x = data[i].position.x;
+		GLfloat y = data[i].position.y;
+		GLfloat z = data[i].position.z;
+		printf("%.2f , %.2f , %.2f\n", x, y, z);
+
+		if (i % 3 == 2) {
+			cout << endl;
+		}
+	}
+}
