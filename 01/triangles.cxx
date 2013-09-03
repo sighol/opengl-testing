@@ -75,6 +75,7 @@ void initDynamicData() {
 	glBindVertexArray(VAOs[Triangles]);
 
 	VertexData* vertices = getVertices(2, 2, &NumVertices);
+	cout << vertices << endl;
 	printVertices(vertices, NumVertices);
 	uint dataSize = NumVertices * VERTEX_DATA_SIZE;
 

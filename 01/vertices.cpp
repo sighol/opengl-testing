@@ -60,6 +60,7 @@ void printVertex(Vertex v) {
 }
 
 void printVertexData(VertexData *vd) {
+	cout << vd << " - ";
 	cout << "Pos: ";
 	for (int i = 0; i < 3; i++) {
 		cout << vd->position[i] << ", ";
