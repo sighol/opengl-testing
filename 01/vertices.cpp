@@ -15,10 +15,8 @@ VertexData* getVertices(int cols, int rows, uint* size) {
 			Vertex nw = getVertex(x, y+1);
 			Vertex square[] = {se, sw, nw, se, nw, ne};
 			for (int i = 0; i < 6; i++) {
-				Vertex v = square[i];
-				Color c = getColor();
-				vertices[n].color = c;
-				vertices[n].position = v;
+				vertices[n].color = getColor();
+				vertices[n].position = square[i];
 				n++;
 			}
 
@@ -48,12 +46,10 @@ Color getColor() {
 }
 
 void printVertices(VertexData* vertices, int size) {
-	cout << "printing: " << size <<  endl;
 	for (int i = 0; i < size; i++) {
 		VertexData *data = &vertices[i];
 		printVertexData(data);
 	}
-	cout << "is done" << endl;
 }
 
 void printVertex(Vertex v) {
