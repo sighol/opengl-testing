@@ -15,6 +15,7 @@ in vec4 vPosition;
 in vec4 vColor;
 
 out vec4 exColor;
+out float exDist;
 
 
 void main() {
@@ -41,4 +42,5 @@ void main() {
 						   0, 0,    0, 1);
 	gl_Position = xTransform * yTransform * vPosition;
 	exColor = 1 * vColor;
+	exDist = gl_Position.z;
 }

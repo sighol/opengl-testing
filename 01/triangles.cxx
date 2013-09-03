@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	initShaders();
 	initDynamicData();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
 
 	glutMainLoop();
 }
@@ -74,17 +74,14 @@ void initDynamicData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	vector<VertexData> vertices = getVertices(2, 3);
+	vector<VertexData> vertices = getVertices(30, 30);
+
+	NumVertices = vertices.size() * sizeof(VertexData);
 	cout << vertices.size() << endl;
-	printVertexData(vertices);
-
-	uint size = vertices.size() * sizeof(VertexData);
-
-	cout << size << endl;
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, size, &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, NumVertices, &vertices[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
 						  sizeof(VertexData), 0);
 	error("vColorattribpointer");

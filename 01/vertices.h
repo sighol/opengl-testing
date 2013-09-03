@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <algorithm>
 
 struct Vertex {
 	GLfloat x, y, z, w;
@@ -20,10 +21,7 @@ struct VertexData {
 };
 
 std::vector<VertexData> getVertices(int cols, int rows);
-Vertex getVertex(int x, int y);
+Vertex getVertex(int m,int x, int y);
 Color getColor();
-// void printVertices(VertexData* data, int size);
 GLfloat func(int x, int y);
-// void printVertex(Vertex vertex);
-// void printVertexData(std::);
-void printVertexData(const std::vector<VertexData> &data);
+void printVertices(const std::vector<VertexData> &data);

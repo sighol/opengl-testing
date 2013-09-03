@@ -5,14 +5,17 @@ using namespace std;
 
 vector<VertexData> getVertices(int cols, int rows) {
 	srand(time(NULL));
+	int m = max(cols, rows);
 	vector<VertexData> vec;
+	int row_center = rows/2;
+	int col_center = cols/2;
 	for (int y = 0; y < rows-1; y++) {
 		for (int x = 0; x < cols-1; x++) {
-			Vertex sw = getVertex(x, y);
-			Vertex se = getVertex(x+1, y);
-			Vertex ne = getVertex(x+1, y+1);
-			Vertex nw = getVertex(x, y+1);
-			Vertex square[] = {se, sw, nw, se, nw, ne};
+			Vertex sw = getVertex(m, x-row_center, y-col_center);
+			Vertex se = getVertex(m, x+1-row_center, y-col_center);
+			Vertex ne = getVertex(m, x+1-row_center, y+1-col_center);
+			Vertex nw = getVertex(m, x-row_center, y+1-col_center);
+			Vertex square[] = {sw, se, ne, sw, ne, nw};
 			for (int i = 0; i < 6; i++) {
 				VertexData data;
 				data.position = square[i];
@@ -25,12 +28,12 @@ vector<VertexData> getVertices(int cols, int rows) {
 	return vec;
 }
 
-Vertex getVertex(int x, int y) {
+Vertex getVertex(int m, int x, int y) {
 	Vertex v;
-	int d = 2;
+	int d = m/2;
 	v.x = float(x)/d;
 	v.y = float(y)/d;
-	v.z = func(x, y)/d;
+	v.z = func(x, y)/(d*d);
 	v.w = 1.0;
 	return v;
 }
@@ -45,32 +48,10 @@ Color getColor() {
 }
 
 GLfloat func(int x, int y) {
-	return 0.0;
+	return 1-x*x + y*y;
 }
 
-// Color getColor() {
-// 	GLubyte *color = new GLubyte[4];
-// 	for (int i = 0; i < 4; i++) {
-// 		color[i] = rand() % 255;
-// 	}
-// 	return color;
-// }
-
-// void printVertices(VertexData* vertices, int size) {
-// 	for (int i = 0; i < size; i++) {
-// 		VertexData *data = &vertices[i];
-// 		printVertexData(data);
-// 	}
-// }
-
-// void printVertex(Vertex v) {
-// 	for (int i = 0; i < 3; i++) {
-// 		cout << v[i] << ", ";
-// 	}
-// 	cout << endl;
-// }
-
-void printVertexData(const vector<VertexData> &data) {
+void printVertices(const vector<VertexData> &data) {
 	for (uint i = 0; i < data.size(); ++i) {
 		GLfloat x = data[i].position.x;
 		GLfloat y = data[i].position.y;
