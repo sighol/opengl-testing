@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	InitWindow(argc, argv);
 
 	initShaders();
-	initDynamicData();
+	initStaticData();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -74,21 +74,18 @@ void initDynamicData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	VertexData* vertices = getVertices(2, 2, &NumVertices);
-	cout << vertices << endl;
-	printVertices(vertices, NumVertices);
-	uint dataSize = NumVertices * VERTEX_DATA_SIZE;
+	vector<VertexData> vertices = getVertices(2, 2);
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, dataSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexData), &vertices[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-						  VERTEX_DATA_SIZE, 0);
+						  sizeof(VertexData), 0);
 	error("vColorattribpointer");
 
-	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE,
-						  VERTEX_DATA_SIZE,
-						  BUFFER_OFFSET(4 * sizeof(GLubyte)));
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE,
+						  sizeof(VertexData),
+						  (GLvoid*)sizeof(Color));
 	glEnableVertexAttribArray(vColor);
 	glEnableVertexAttribArray(vPosition);
 	error("last");
@@ -103,15 +100,17 @@ void initStaticData() {
 		GLfloat position[4];
 	}  StaticVertexData;
 
+	cout << "Data Size stat: " << sizeof(StaticVertexData) << endl;
+
 	const GLuint verticesCount = 6;
 	StaticVertexData vertices[verticesCount] = {
-		{{ 255,   0,   0, 255}, { -0.90, -0.90, 0.0f}},
-		{{   0, 255,   0, 255}, {  0.85, -0.90, 1.0f}},
-		{{   0,   0, 255, 255}, { -0.90,  0.85, 0.0f}},
-		{{ 255,  10,  10, 255}, {  0.90, -0.85, 0.0f}},
-		{{ 100, 100,  10, 255}, {  0.90,  0.90, 1.0f}},
-		{{ 100,   0, 100, 255}, { -0.85,  0.90, 0.0f}}
-	};
+           {{ 255,   0,   0, 255}, { -0.90, -0.90, 0.0f}},
+           {{   0, 255,   0, 255}, {  0.85, -0.90, 1.0f}},
+           {{   0,   0, 255, 255}, { -0.90,  0.85, 0.0f}},
+           {{ 255,  10,  10, 255}, {  0.90, -0.85, 0.0f}},
+           {{ 100, 100,  10, 255}, {  0.90,  0.90, 1.0f}},
+           {{ 100,   0, 100, 255}, { -0.85,  0.90, 0.0f}}
+   };
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
@@ -119,7 +118,7 @@ void initStaticData() {
 	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
 						  sizeof(StaticVertexData), 0);
 
-	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE,
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE,
 						  sizeof(StaticVertexData),
 						  BUFFER_OFFSET(sizeof(vertices[0].color)));
 	glEnableVertexAttribArray(vColor);

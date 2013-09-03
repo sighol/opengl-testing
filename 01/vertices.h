@@ -3,22 +3,25 @@
 #include <GL/gl.h>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
-typedef GLfloat* Vertex;
-typedef GLubyte* Color;
+struct Vertex {
+	GLfloat x, y, z, w;
+};
 
-typedef struct {
-		GLubyte *color;
-		GLfloat *position;
-} VertexData;
+struct Color {
+	GLubyte r, g, b, a;
+};
 
-const uint VERTEX_DATA_SIZE = 3* sizeof(GLfloat) + 4*sizeof(GLubyte);
+struct VertexData {
+		Color color;
+		Vertex position;
+};
 
-
-VertexData* getVertices(int cols, int rows, uint* size);
+std::vector<VertexData> getVertices(int cols, int rows);
 Vertex getVertex(int x, int y);
 Color getColor();
-void printVertices(VertexData* data, int size);
+// void printVertices(VertexData* data, int size);
 GLfloat func(int x, int y);
-void printVertex(Vertex vertex);
-void printVertexData(VertexData *v);
+// void printVertex(Vertex vertex);
+// void printVertexData(std::);
