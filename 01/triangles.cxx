@@ -74,13 +74,9 @@ void initDynamicData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	vector<VertexData> vertices = getVertices(2, 3);
-	cout << vertices.size() << endl;
-	printVertexData(vertices);
-
-	uint size = vertices.size() * sizeof(VertexData);
-
-	cout << size << endl;
+	vector<VertexData> vertices = getVertices(21, 21);
+	GLuint size = vertices.size() * sizeof(VertexData);
+	NumVertices = vertices.size();
 
 	glGenBuffers(NumBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);

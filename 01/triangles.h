@@ -15,7 +15,7 @@ void initStaticData();
 void initDynamicData();
 void initShaders();
 void printGlError(std::string);
-uint CreateShader(std::string, GLenum);
+GLuint CreateShader(std::string, GLenum);
 void display();
 void idle();
 void mouse(int button, int state, int x, int y);

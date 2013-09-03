@@ -15,5 +15,5 @@ typedef struct {
 
 
 GLuint LoadShaders(GLsizei, ShaderInfo[]);
-uint CreateShader(std::string filename, GLenum shaderType);
+GLuint CreateShader(std::string filename, GLenum shaderType);
 void printShaderError(GLuint shaderId, std::string filename);

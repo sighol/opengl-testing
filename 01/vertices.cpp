@@ -45,7 +45,7 @@ Color getColor() {
 }
 
 GLfloat func(int x, int y) {
-	return 0.0;
+	return 0;
 }
 
 // Color getColor() {
@@ -71,7 +71,7 @@ GLfloat func(int x, int y) {
 // }
 
 void printVertexData(const vector<VertexData> &data) {
-	for (uint i = 0; i < data.size(); ++i) {
+	for (GLuint i = 0; i < data.size(); ++i) {
 		GLfloat x = data[i].position.x;
 		GLfloat y = data[i].position.y;
 		GLfloat z = data[i].position.z;
