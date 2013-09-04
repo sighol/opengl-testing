@@ -11,7 +11,6 @@
 #include "vertices.h"
 
 void initData();
-void initStaticData();
 void initDynamicData();
 void initShaders();
 void printGlError(std::string);
