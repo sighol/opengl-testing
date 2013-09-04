@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 	initDynamicData();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glEnable(GL_DEPTH_TEST);
 
 	glutMainLoop();
 }
