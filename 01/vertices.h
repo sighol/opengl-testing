@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 
 #include <GL/gl.h>
 #include <cstdlib>
@@ -7,15 +8,21 @@
 #include <time.h>
 #include <algorithm>
 
-struct Vertex {
+class Vertex {
+public:Vertex(GLfloat _x, GLfloat _y, GLfloat _z) : x(_x), y(_y), z(_z), w(1){}
+	   Vertex(){};
 	GLfloat x, y, z, w;
 };
 
-struct Color {
+class Color {
+	public:Color(GLfloat _x, GLfloat _y, GLfloat _z) : r(_x), g(_y), b(_z), a(1){}
+		   Color(){};
 	GLubyte r, g, b, a;
 };
 
-struct VertexData {
+class VertexData {
+	public:VertexData(Color c, Vertex v):color(c), position(v){};
+		   VertexData(){};
 		Color color;
 		Vertex position;
 };

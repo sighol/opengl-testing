@@ -3,7 +3,7 @@
 using namespace std;
 
 
-uint LoadShaders(GLsizei size, ShaderInfo info[]) {
+GLuint LoadShaders(GLsizei size, ShaderInfo info[]) {
 	GLuint programId = glCreateProgram();
 	for (GLsizei i = 0; i < size; i++) {
 		ShaderInfo* val = &info[i];
@@ -14,7 +14,7 @@ uint LoadShaders(GLsizei size, ShaderInfo info[]) {
 	return programId;
 }
 
-uint CreateShader(string filename, GLenum shaderType) {
+GLuint CreateShader(string filename, GLenum shaderType) {
 	string filepath = "shaders/" + filename;
 	string strShader = readlines(filepath);
 	const char* cShader = strShader.c_str();
