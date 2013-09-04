@@ -22,7 +22,6 @@ vector<VertexData> getVertices(int cols, int rows) {
 				data.color = getColor();
 				vec.push_back(data);
 			}
-
 		}
 	}
 	return vec;
@@ -48,7 +47,7 @@ Color getColor() {
 }
 
 GLfloat func(int x, int y) {
-	return 1-x*x + y*y;
+	return x*y;
 }
 
 void printVertices(const vector<VertexData> &data) {

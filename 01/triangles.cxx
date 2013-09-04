@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	initShaders();
 	initDynamicData();
 
-	glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glutMainLoop();
 }
@@ -74,7 +74,7 @@ void initDynamicData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	vector<VertexData> vertices = getVertices(30, 30);
+	vector<VertexData> vertices = getVertices(3, 3);
 
 	NumVertices = vertices.size() * sizeof(VertexData);
 	cout << vertices.size() << endl;
