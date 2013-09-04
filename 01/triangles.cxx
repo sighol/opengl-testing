@@ -7,17 +7,14 @@ enum VAO_IDs {Triangles, NumVAOs};
 enum Buffer_IDs {ArrayBuffer, NumBuffers};
 enum Attrib_IDs {vPosition = 0, vColor=1};
 
-GLuint VaoId;
-
 GLuint VAOs[NumVAOs];
 GLuint Buffers[NumBuffers];
 
-ShaderInfo *shaders;
-GLint vScaleId;
-
 GLuint NumVertices = 6;
 
-GLint vRotationX, vRotationY;
+ShaderInfo *shaders;
+
+GLint vRotationX, vRotationY, vIsGrid;
 
 int WindowHandle;
 
@@ -74,7 +71,8 @@ void initDynamicData() {
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[Triangles]);
 
-	vector<VertexData> vertices = getVertices(3, 3);
+	Dimension dim(-1, -1, 2, 2);
+	vector<VertexData> vertices = getVertices(dim, 10, 10);
 
 	NumVertices = vertices.size() * sizeof(VertexData);
 	cout << vertices.size() << endl;
@@ -135,14 +133,15 @@ void initShaders() {
 
 	GLuint program = LoadShaders(2, shaders);
 	glUseProgram(program);
-	vScaleId = glGetUniformLocation(program, "vScale");
-	glUniform1f(vScaleId, 2.0);
 
 	vRotationX = glGetUniformLocation(program, "vRotationX");
 	glUniform1i(vRotationX, 0);
 
 	vRotationY = glGetUniformLocation(program, "vRotationY");
 	glUniform1i(vRotationY, 0);
+
+	vIsGrid = glGetUniformLocation(program, "vIsGrid");
+	glUniform1i(vIsGrid, 0);
 
 	error("uniformloc");
 }
@@ -159,7 +158,11 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindVertexArray(VAOs[Triangles]);
+
+	glUniform1i(vIsGrid, 0);
 	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+	glUniform1i(vIsGrid, 1);
+	glDrawArrays(GL_LINES, 0, NumVertices);
 
 	glutSwapBuffers();
 	glutPostRedisplay();

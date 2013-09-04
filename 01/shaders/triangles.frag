@@ -1,14 +1,14 @@
 #version 400
 
-in vec4 exColor;
-in float exDist;
+uniform int vIsGrid;
+
 in vec4 exPos;
 out vec4 fColor;
 
 vec4 color(float x) {
 	float n;
 	if (x < 0) {
-		return vec4(0);
+		return vec4(0, 0, 1,1);
 	} else if (x < 0.25) {
 		// blå -> turkis
 		n = x / 0.25;
@@ -31,8 +31,12 @@ vec4 color(float x) {
 }
 
 void main() {
-	float z = (exPos.z) + 0.5;
+	float z = (exPos.z*2)+ 1;
 	vec4 black = vec4(0);
 	vec4 c = vec4(exPos.y, 1-z, exPos.x, 1);
-	fColor =  color(z);
+	if (vIsGrid == 0) {
+		fColor =  color(z);
+	} else {
+		fColor = black;
+	}
 }

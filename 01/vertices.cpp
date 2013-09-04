@@ -1,20 +1,23 @@
 #include "vertices.h"
 
+#include <cmath>
+
 using namespace std;
 
 
-vector<VertexData> getVertices(int cols, int rows) {
+vector<VertexData> getVertices(Dimension dim, int cols, int rows) {
 	srand(time(NULL));
-	int m = max(cols, rows);
 	vector<VertexData> vec;
-	int row_center = rows/2;
-	int col_center = cols/2;
-	for (int y = 0; y < rows-1; y++) {
-		for (int x = 0; x < cols-1; x++) {
-			Vertex sw = getVertex(m, x-row_center, y-col_center);
-			Vertex se = getVertex(m, x+1-row_center, y-col_center);
-			Vertex ne = getVertex(m, x+1-row_center, y+1-col_center);
-			Vertex nw = getVertex(m, x-row_center, y+1-col_center);
+	GLfloat xStep = dim.width / cols;
+	GLfloat yStep = dim.width / rows;
+	for (int j = 0; j < rows-1; j++) {
+		for (int i = 0; i < cols-1; i++) {
+			GLfloat x =	i * xStep + dim.x;
+			GLfloat y = j * yStep + dim.y;
+			Vertex sw = getVertex(x, y);
+			Vertex se = getVertex(x+xStep, y);
+			Vertex ne = getVertex(x+xStep, y+yStep);
+			Vertex nw = getVertex(x, y+yStep);
 			Vertex square[] = {sw, se, ne, sw, ne, nw};
 			for (int i = 0; i < 6; i++) {
 				VertexData data;
@@ -27,12 +30,11 @@ vector<VertexData> getVertices(int cols, int rows) {
 	return vec;
 }
 
-Vertex getVertex(int m, int x, int y) {
+Vertex getVertex(GLfloat x, GLfloat y) {
 	Vertex v;
-	int d = m/2;
-	v.x = float(x)/d;
-	v.y = float(y)/d;
-	v.z = func(x, y)/(d*d);
+	v.x = float(x);
+	v.y = float(y);
+	v.z = func(x, y);
 	v.w = 1.0;
 	return v;
 }
@@ -46,8 +48,8 @@ Color getColor() {
 	return c;
 }
 
-GLfloat func(int x, int y) {
-	return x*y;
+GLfloat func(GLfloat x, GLfloat y) {
+	return x*x - y*y;
 }
 
 void printVertices(const vector<VertexData> &data) {

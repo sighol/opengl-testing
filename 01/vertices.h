@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+// #include <Windows.h>
 
 #include <GL/gl.h>
 #include <cstdlib>
@@ -27,8 +27,28 @@ class VertexData {
 		Vertex position;
 };
 
-std::vector<VertexData> getVertices(int cols, int rows);
-Vertex getVertex(int m,int x, int y);
+class Dimension {
+public:
+	Dimension(GLfloat _x, GLfloat _y, GLfloat _w, GLfloat _h) :
+			x(_x), y(_y), width(_w), height(_h){};
+	GLfloat x, y, width, height;
+};
+
+class SurfData {
+public:
+	SurfData(GLfloat (*_func) (GLfloat, GLfloat), Dimension _d) :
+			dimension(_d), func(_func) {};
+	Dimension dimension;
+	GLfloat (*func)(GLfloat, GLfloat);
+	VertexData triangles;
+	VertexData grid;
+	GLfloat minZ;
+	GLfloat maxZ;
+};
+
+std::vector<VertexData> getVertices(Dimension, int cols, int rows);
+Vertex getVertex(GLfloat x, GLfloat y);
 Color getColor();
-GLfloat func(int x, int y);
+GLfloat func(GLfloat x, GLfloat y);
 void printVertices(const std::vector<VertexData> &data);
+
