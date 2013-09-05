@@ -1,8 +1,7 @@
 #pragma once
 
 #ifdef _WIN32
-#include <Windows.h>
-#include <conio.h>
+	#include <Windows.h>
 #endif
 
 #include <GL/glew.h>

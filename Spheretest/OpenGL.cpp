@@ -83,7 +83,6 @@ void OpenGL::CompileProgram() {
 		std::cout << "Error: " << std::endl;
 		glGetProgramInfoLog(programId, infologLength, &charsWritten, buffer);
 		std::cout << buffer << std::endl;
-		_getch();
    }
 
 	glUseProgram(programId);
@@ -121,7 +120,6 @@ void OpenGL::printShaderError(GLuint shaderId, string filename) {
 
 		fprintf(stderr, "Compilation error in shader %s: %s\n", filename.c_str(), strInfoLog);
 		delete[] strInfoLog;
-		_getch();
 		exit(EXIT_FAILURE);
 	}
 }
