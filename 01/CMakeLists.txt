@@ -10,8 +10,6 @@ add_definitions(
 )
 
 add_library(RF_LIB ${SRC_LIST})
-add_executable(readfile "readfile-test.cpp")
-target_link_libraries(readfile RF_LIB)
 
 add_library(LS_LIB "../lib/LoadShaders.cpp")
 
