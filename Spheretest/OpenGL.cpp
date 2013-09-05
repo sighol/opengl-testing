@@ -33,7 +33,7 @@ void OpenGL::init()
 {
 	char *myargv [1];
 	int myargc=1;
-	myargv [0]= _strdup ("OpenGL");
+	myargv [0]= strdup ("OpenGL");
 	glutInit(&myargc, myargv);
 	glutInitContextVersion(4, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
@@ -64,17 +64,17 @@ void OpenGL::init()
 		cerr << glewGetErrorString(glewInitResult) << endl;
 		exit(EXIT_FAILURE);
 	}
-	
+
 	glEnable(GL_DEPTH_TEST);
 	programId = glCreateProgram();
 }
 
 void OpenGL::CompileProgram() {
 	glLinkProgram(programId);
-	
+
 	GLint status;
 	glGetProgramiv(programId, GL_LINK_STATUS, &status);
-	
+
    if(status == false){
 		int infologLength =  0;
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infologLength);

@@ -2,6 +2,9 @@
 
 #ifdef _WIN32
 	#include <Windows.h>
+	#include <string>
+#elif __gnu_linux__
+	#include <string.h>
 #endif
 
 #include <GL/glew.h>
@@ -10,10 +13,10 @@
 
 #include <vector>
 #include <map>
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 using namespace std;
 
