@@ -3,20 +3,24 @@
 using namespace std;
 
 
-enum VAO_IDs {Triangles, NumVAOs};
-enum Buffer_IDs {ArrayBuffer, NumBuffers};
-enum Attrib_IDs {vPosition = 0, vColor=1};
+enum vertexArrayIDs {Triangles, numVertexArrays};
+enum bufferIDs {ArrayBuffer, numBuffers};
 
-GLuint VAOs[NumVAOs];
-GLuint Buffers[NumBuffers];
+struct LayoutState {
+	GLint position = 0;
+	GLint color = 1;
+};
 
-GLuint NumVertices = 6;
+LayoutState layout;
+
+GLuint vertexArrays[numVertexArrays];
+GLuint Buffers[numBuffers];
+
+GLuint vertexCount;
 
 ShaderInfo *shaders;
 
 GLint vRotationX, vRotationY, vIsGrid;
-
-int WindowHandle;
 
 int main(int argc, char **argv)
 {
@@ -46,7 +50,7 @@ void InitWindow(int argc, char** argv)
 	glutInitWindowSize(512, 512);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
-	WindowHandle = glutCreateWindow(argv[0]);
+	GLint WindowHandle = glutCreateWindow(argv[0]);
 
 	if (WindowHandle < 1) {
 		fprintf(
@@ -69,27 +73,27 @@ void InitWindow(int argc, char** argv)
 }
 
 void initDynamicData() {
-	glGenVertexArrays(NumVAOs, VAOs);
-	glBindVertexArray(VAOs[Triangles]);
+	glGenVertexArrays(numVertexArrays, vertexArrays);
+	glBindVertexArray(vertexArrays[Triangles]);
 
 	Dimension dim(-1, -1, 2, 2);
 	vector<VertexData> vertices = getVertices(dim, 10, 10);
 
-	NumVertices = vertices.size() * sizeof(VertexData);
+	vertexCount = vertices.size() * sizeof(VertexData);
 	cout << vertices.size() << endl;
 
-	glGenBuffers(NumBuffers, Buffers);
+	glGenBuffers(numBuffers, Buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, NumVertices, &vertices[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(vColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+	glBufferData(GL_ARRAY_BUFFER, vertexCount, &vertices[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(layout.color, 4, GL_UNSIGNED_BYTE, GL_TRUE,
 						  sizeof(VertexData), 0);
-	error("vColorattribpointer");
+	error("layout.colorattribpointer");
 
-	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE,
+	glVertexAttribPointer(layout.position, 4, GL_FLOAT, GL_FALSE,
 						  sizeof(VertexData),
 						  (GLvoid*)sizeof(Color));
-	glEnableVertexAttribArray(vColor);
-	glEnableVertexAttribArray(vPosition);
+	glEnableVertexAttribArray(layout.color);
+	glEnableVertexAttribArray(layout.position);
 	error("last");
 }
 
@@ -126,12 +130,12 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(VAOs[Triangles]);
+	glBindVertexArray(vertexArrays[Triangles]);
 
 	glUniform1i(vIsGrid, 0);
-	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	glUniform1i(vIsGrid, 1);
-	glDrawArrays(GL_LINES, 0, NumVertices);
+	glDrawArrays(GL_LINES, 0, vertexCount);
 
 	glutSwapBuffers();
 	glutPostRedisplay();
