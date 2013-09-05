@@ -10,17 +10,14 @@
 #include "LoadShaders.h"
 #include "vertices.h"
 
-void initData();
 void initDynamicData();
 void initShaders();
 void printGlError(std::string);
-GLuint CreateShader(std::string, GLenum);
 void display();
-void idle();
 void mouse(int button, int state, int x, int y);
 void motion(int, int);
 void InitWindow(int argc, char** argv);
 void error(std::string);
-void printShaderError(GLuint, std::string filename);
+void initUniforms(GLuint program);
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))

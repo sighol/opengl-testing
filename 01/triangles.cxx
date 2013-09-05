@@ -11,32 +11,63 @@ struct LayoutState {
 	GLint color = 1;
 };
 
+struct UniformState {
+	GLint xRotation, yRotation, isGrid, zoom, maxZ, minZ;
+};
+
+UniformState uniforms;
+
 LayoutState layout;
 
 GLuint vertexArrays[numVertexArrays];
-GLuint Buffers[numBuffers];
+GLuint buffers[numBuffers];
 
-GLuint vertexCount;
+GLuint vertexSize, vertexByteSize;
 
-ShaderInfo *shaders;
+GLint frameCount = 0;
 
-GLint vRotationX, vRotationY, vIsGrid;
+struct View {
+	GLint rows = 10;
+	GLint cols = 10;
+	Dimension dim{-1, -1, 2, 2};
+	GLint width = 600;
+	GLint height = 400;
+	float minZ;
+	float maxZ;
+};
 
-int main(int argc, char **argv)
-{
-	InitWindow(argc, argv);
+View view;
 
+void initGL();
+void initGlut(int argc, char **argv);
+void initCallbacks();
+void timer(int);
+void resize(int, int);
+
+
+int main(int argc, char **argv){
+	initGlut(argc, argv);
 	initShaders();
 	initDynamicData();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glEnable(GL_DEPTH_TEST);
-
+	initGL();
+	initCallbacks();
 	glutMainLoop();
 }
 
-void InitWindow(int argc, char** argv)
-{
+void initCallbacks() {
+	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutTimerFunc(0, timer, 0);
+	glutReshapeFunc(resize);
+}
+
+void initGL() {
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+}
+
+void initGlut(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitContextVersion(4, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
@@ -47,7 +78,7 @@ void InitWindow(int argc, char** argv)
 		GLUT_ACTION_GLUTMAINLOOP_RETURNS
 	);
 
-	glutInitWindowSize(512, 512);
+	glutInitWindowSize(view.width, view.height);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
 	GLint WindowHandle = glutCreateWindow(argv[0]);
@@ -66,25 +97,26 @@ void InitWindow(int argc, char** argv)
 		cerr << glewGetErrorString(glewInitResult) << endl;
 		exit(EXIT_FAILURE);
 	}
-
-	glutDisplayFunc(display);
-	glutMouseFunc(mouse);
-	glutMotionFunc(motion);
 }
 
 void initDynamicData() {
 	glGenVertexArrays(numVertexArrays, vertexArrays);
 	glBindVertexArray(vertexArrays[Triangles]);
 
-	Dimension dim(-1, -1, 2, 2);
-	vector<VertexData> vertices = getVertices(dim, 10, 10);
+	vector<VertexData> vertices = getVertices(view.dim, view.cols, view.rows, &view.minZ, &view.maxZ);
 
-	vertexCount = vertices.size() * sizeof(VertexData);
+	cout << "min: " << view.minZ << ", max: " << view.maxZ << endl;
+
+	glUniform1f(uniforms.maxZ, view.maxZ);
+	glUniform1f(uniforms.minZ, view.minZ);
+
+	vertexSize = vertices.size();
+	vertexByteSize = vertexSize * sizeof(VertexData);
 	cout << vertices.size() << endl;
 
-	glGenBuffers(numBuffers, Buffers);
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
-	glBufferData(GL_ARRAY_BUFFER, vertexCount, &vertices[0], GL_STATIC_DRAW);
+	glGenBuffers(numBuffers, buffers);
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[ArrayBuffer]);
+	glBufferData(GL_ARRAY_BUFFER, vertexByteSize, &vertices[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(layout.color, 4, GL_UNSIGNED_BYTE, GL_TRUE,
 						  sizeof(VertexData), 0);
 	error("layout.colorattribpointer");
@@ -98,24 +130,27 @@ void initDynamicData() {
 }
 
 void initShaders() {
-	ShaderInfo s[] = {
+	ShaderInfo shaders[] = {
 		{GL_VERTEX_SHADER, "triangles.vert"},
 		{GL_FRAGMENT_SHADER, "triangles.frag"}
 	};
-	shaders = s;
 
 	GLuint program = LoadShaders(2, shaders);
 	glUseProgram(program);
 
-	vRotationX = glGetUniformLocation(program, "vRotationX");
-	glUniform1i(vRotationX, 0);
+	initUniforms(program);
+}
 
-	vRotationY = glGetUniformLocation(program, "vRotationY");
-	glUniform1i(vRotationY, 0);
+void initUniforms(GLuint program) {
+	uniforms.xRotation = glGetUniformLocation(program, "vRotationX");
+	uniforms.yRotation = glGetUniformLocation(program, "vRotationY");
+	uniforms.isGrid = glGetUniformLocation(program, "vIsGrid");
+	uniforms.maxZ = glGetUniformLocation(program, "vMaxZ");
+	uniforms.minZ = glGetUniformLocation(program, "vMinZ");
 
-	vIsGrid = glGetUniformLocation(program, "vIsGrid");
-	glUniform1i(vIsGrid, 0);
-
+	glUniform1i(uniforms.xRotation, 0);
+	glUniform1i(uniforms.yRotation, 0);
+	glUniform1i(uniforms.isGrid, 0);
 	error("uniformloc");
 }
 
@@ -128,14 +163,16 @@ void error(string title) {
 
 void display()
 {
+	frameCount++;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindVertexArray(vertexArrays[Triangles]);
 
-	glUniform1i(vIsGrid, 0);
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-	glUniform1i(vIsGrid, 1);
-	glDrawArrays(GL_LINES, 0, vertexCount);
+	glUniform1i(uniforms.isGrid, 0);
+	glDrawArrays(GL_TRIANGLES, 0, vertexSize);
+	glUniform1i(uniforms.isGrid, 1);
+
+	glDrawArrays(GL_LINES, 0, vertexSize);
 
 	glutSwapBuffers();
 	glutPostRedisplay();
@@ -158,9 +195,31 @@ void mouse(int button, int state, int x, int y) {
 void motion(int x, int y) {
 	dx = (x - xBase);
 	float rotationX = (dx + pastDx)/4;
-	glUniform1i(vRotationX, rotationX);
+	glUniform1i(uniforms.xRotation, rotationX);
 
 	dy = (y - yBase);
 	float rotationY = (dy + pastDy)/4;
-	glUniform1i(vRotationY, rotationY);
+	glUniform1i(uniforms.yRotation, rotationY);
+}
+
+void resize(int width, int height) {
+	view.width = width;
+	view.height = height;
+	glViewport(0, 0, width, height);
+}
+
+void timer(int Value) {
+	if (0 != Value) {
+		char *tempString = (char*)
+				malloc(512 * sizeof(char));
+
+		sprintf(tempString,
+			"%s: %d FPS: @ %d x %d", "Surf", frameCount * 4,
+			view.width, view.height);
+
+		glutSetWindowTitle(tempString);
+		free(tempString);
+	}
+	frameCount = 0;
+	glutTimerFunc(250, timer, 1);
 }

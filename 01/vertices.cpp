@@ -1,11 +1,14 @@
 #include "vertices.h"
 
 #include <cmath>
+#include <cfloat>
 
 using namespace std;
 
 
-vector<VertexData> getVertices(Dimension dim, int cols, int rows) {
+vector<VertexData> getVertices(Dimension dim, int cols, int rows, float* minZ, float* maxZ) {
+	*minZ = FLT_MAX;
+	*maxZ = FLT_MIN;
 	srand(time(NULL));
 	vector<VertexData> vec;
 	GLfloat xStep = dim.width / cols;
@@ -20,6 +23,12 @@ vector<VertexData> getVertices(Dimension dim, int cols, int rows) {
 			Vertex nw = getVertex(x, y+yStep);
 			Vertex square[] = {sw, se, ne, sw, ne, nw};
 			for (int i = 0; i < 6; i++) {
+				if (square[i].z > *maxZ) {
+					*maxZ = square[i].z;
+				}
+				if (square[i].z < *minZ) {
+					*minZ = square[i].z;
+				}
 				VertexData data;
 				data.position = square[i];
 				data.color = getColor();

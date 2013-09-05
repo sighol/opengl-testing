@@ -49,7 +49,7 @@ public:
 	GLfloat maxZ;
 };
 
-std::vector<VertexData> getVertices(Dimension, int cols, int rows);
+std::vector<VertexData> getVertices(Dimension, int cols, int rows, float*, float*);
 Vertex getVertex(GLfloat x, GLfloat y);
 Color getColor();
 GLfloat func(GLfloat x, GLfloat y);
