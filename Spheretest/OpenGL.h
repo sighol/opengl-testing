@@ -3,7 +3,9 @@
 #ifdef _WIN32
 	#include <Windows.h>
 	#include <string>
+	#define STRDUP _strdup
 #elif __gnu_linux__
+	#define STRDUP strdup
 	#include <string.h>
 #endif
 
