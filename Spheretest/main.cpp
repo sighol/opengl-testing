@@ -1,6 +1,5 @@
 #include "OpenGL.h"
 
-
 std::vector<Vertex> createSphere(float rad, int rings, int sectors);
 void display();
 void mouse(int button, int state, int x, int y);

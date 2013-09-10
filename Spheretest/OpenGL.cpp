@@ -44,7 +44,7 @@ void OpenGL::init()
 		GLUT_ACTION_GLUTMAINLOOP_RETURNS
 		);
 
-	glutInitWindowSize(1280, 720);
+	glutInitWindowSize(1900, 1280);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
 	auto WindowHandle = glutCreateWindow("OpenGL");

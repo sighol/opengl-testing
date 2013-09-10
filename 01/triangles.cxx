@@ -7,8 +7,9 @@ enum vertexArrayIDs {Triangles, numVertexArrays};
 enum bufferIDs {ArrayBuffer, numBuffers};
 
 struct LayoutState {
-	GLint position = 0;
-	GLint color = 1;
+	LayoutState():position(0), color(1){}
+	GLint position;
+	GLint color;
 };
 
 struct UniformState {
@@ -27,11 +28,12 @@ GLuint vertexSize, vertexByteSize;
 GLint frameCount = 0;
 
 struct View {
-	GLint rows = 10;
-	GLint cols = 10;
-	Dimension dim{-1, -1, 2, 2};
-	GLint width = 600;
-	GLint height = 400;
+	View():rows(10),cols(10),dim(Dimension(-1, -1, 2, 2)),width(600),height(400){}
+	GLint rows;
+	GLint cols;
+	Dimension dim;
+	GLint width;
+	GLint height;
 	float minZ;
 	float maxZ;
 };
@@ -213,11 +215,10 @@ void timer(int Value) {
 		char *tempString = (char*)
 				malloc(512 * sizeof(char));
 
-		sprintf(tempString,
-			"%s: %d FPS: @ %d x %d", "Surf", frameCount * 4,
-			view.width, view.height);
+		std::stringstream ss;
+		ss << "Surf: " << frameCount * 4 << "FPS: @ " << view.width << " x " << view.height;
 
-		glutSetWindowTitle(tempString);
+		glutSetWindowTitle(ss.str().c_str());
 		free(tempString);
 	}
 	frameCount = 0;

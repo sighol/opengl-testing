@@ -10,11 +10,11 @@ out vec4 gColor;
 
 void main() {
 
-	float radx = time;
+	float radx = 1;
 	float sx = sin(radx);
 	float cx = cos(radx);
 
-	float rady = time;
+	float rady = 1;
 	float sy = sin(rady);
 	float cy = cos(rady);
 
@@ -32,7 +32,7 @@ void main() {
 	gColor = (pos+vec4(0.7, 0.7, 0.7, 1))/1.4;
 
 	pos.x = pos.x * (1+sin(((pos.z+1)+time)*5)/6);
-	pos.y = pos.y * (1+sin(((pos.z+1)+time+1)*4)/7);
+	pos.y = pos.y * (1+sin(((pos.x+1)+time+1)*4)/7);
 
 	gl_Position = xTransform * yTransform * pos.xzyw;
 }

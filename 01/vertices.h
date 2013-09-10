@@ -18,7 +18,7 @@ public:Vertex(GLfloat _x, GLfloat _y, GLfloat _z) : x(_x), y(_y), z(_z), w(1){}
 };
 
 class Color {
-	public:Color(GLfloat _x, GLfloat _y, GLfloat _z) : r(_x), g(_y), b(_z), a(1){}
+	public:Color(GLubyte _x, GLubyte _y, GLubyte _z) : r(_x), g(_y), b(_z), a(1){}
 		   Color(){};
 	GLubyte r, g, b, a;
 };
