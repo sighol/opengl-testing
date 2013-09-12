@@ -8,7 +8,7 @@
 #include <string>
 #include <sstream>
 
-#include "LoadShaders.h"
+#include "loadshaders.h"
 #include "vertices.h"
 
 void initDynamicData();
