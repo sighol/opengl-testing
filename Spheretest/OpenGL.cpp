@@ -35,7 +35,7 @@ void OpenGL::init()
 	int myargc=1;
 	myargv [0]= STRDUP("OpenGL");
 	glutInit(&myargc, myargv);
-	glutInitContextVersion(4, 0);
+	glutInitContextVersion(3, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 

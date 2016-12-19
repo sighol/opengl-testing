@@ -1,4 +1,4 @@
-#version 400
+#version 150
 
 uniform int vRotationX;
 uniform int vRotationY;

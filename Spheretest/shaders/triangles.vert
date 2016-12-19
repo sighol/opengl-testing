@@ -1,4 +1,5 @@
-#version 400
+#version 330
+#extension GL_ARB_explicit_attrib_location : enable
 
 uniform float vRotationX;
 uniform float vRotationY;

@@ -71,7 +71,7 @@ void initGL() {
 
 void initGlut(int argc, char** argv) {
 	glutInit(&argc, argv);
-	glutInitContextVersion(4, 0);
+	glutInitContextVersion(3, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 
